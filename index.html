@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Train Wagon Defect Detection - RunPod Client</title>
     <style>
         * {
@@ -456,13 +456,11 @@
 
         <div class="upload-section">
             <div class="file-input-wrapper">
-                <label for="fileInput" class="file-input-label">
-                    📷 Choose Image
-                </label>
-                <input type="file" id="fileInput" accept="image/*">
+                <label for="fileInput" class="file-input-label">📷 Choose Image</label>
+                <input type="file" id="fileInput" accept="image/*" />
             </div>
             <div class="preview-container" id="previewContainer">
-                <img id="previewImage" class="preview-image" alt="Preview">
+                <img id="previewImage" class="preview-image" alt="Preview" />
             </div>
         </div>
 
@@ -470,31 +468,31 @@
             <label for="apiKey" style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">
                 🔑 RunPod API Key
             </label>
-            <input 
-                type="password" 
-                id="apiKey" 
-                class="api-key-input" 
+            <input
+                type="password"
+                id="apiKey"
+                class="api-key-input"
                 placeholder="Enter your RunPod API Key"
-            >
+            />
         </div>
 
         <div class="api-key-section">
             <label for="endpointId" style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">
                 🎯 Endpoint ID
             </label>
-            <input 
-                type="text" 
-                id="endpointId" 
-                class="api-key-input" 
+            <input
+                type="text"
+                id="endpointId"
+                class="api-key-input"
                 placeholder="Enter your RunPod Endpoint ID (e.g., v3usm0g87m12nl)"
                 value="v3usm0g87m12nl"
-            >
+            />
         </div>
 
         <div class="options-section">
             <div class="option-card">
                 <label>
-                    <input type="checkbox" id="enhancedAccuracy" checked>
+                    <input type="checkbox" id="enhancedAccuracy" checked />
                     Enhanced Accuracy Mode
                 </label>
                 <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
@@ -503,7 +501,7 @@
             </div>
             <div class="option-card">
                 <label>
-                    <input type="checkbox" id="highPrecision" checked>
+                    <input type="checkbox" id="highPrecision" checked />
                     High Precision Detection
                 </label>
                 <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
@@ -512,9 +510,7 @@
             </div>
         </div>
 
-        <button class="submit-btn" id="submitBtn" disabled>
-            🚀 Detect Defects
-        </button>
+        <button class="submit-btn" id="submitBtn" disabled>🚀 Detect Defects</button>
 
         <div class="status-container" id="statusContainer">
             <h3>📊 Processing Status</h3>
@@ -528,17 +524,16 @@
     </div>
 
     <script>
-        // Configuration
         const RUNPOD_API_BASE = 'https://api.runpod.ai/v2';
-        const POLL_INTERVAL = 2000; // 2 seconds
-        const DEBUG_MODE = true; // Set to false in production
+        const POLL_INTERVAL = 2000;
+        const DEBUG_MODE = true;
 
         let selectedFile = null;
+        let optimizedFile = null; // Store the resized/compressed file here
         let jobId = null;
         let pollInterval = null;
-        let annotatedImageData = null; // Store annotated image data
+        let annotatedImageData = null;
 
-        // DOM Elements
         const fileInput = document.getElementById('fileInput');
         const previewContainer = document.getElementById('previewContainer');
         const previewImage = document.getElementById('previewImage');
@@ -550,62 +545,127 @@
         const resultsContainer = document.getElementById('resultsContainer');
         const resultsContent = document.getElementById('resultsContent');
 
-        // Debug logging
         function debugLog(message, data = null) {
             if (DEBUG_MODE) {
                 console.log(`[DEBUG] ${message}`, data || '');
             }
         }
 
-        // Event Listeners
         fileInput.addEventListener('change', handleFileSelect);
         apiKeyInput.addEventListener('input', validateForm);
         endpointIdInput.addEventListener('input', validateForm);
         submitBtn.addEventListener('click', handleSubmit);
 
-        // Handle file selection
-        function handleFileSelect(event) {
+        // Resize and compress the image file
+        function resizeImage(file, maxWidth = 1024, maxHeight = 1024, quality = 0.8) {
+            return new Promise((resolve, reject) => {
+                const image = new Image();
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    image.src = e.target.result;
+                };
+
+                image.onload = function () {
+                    let width = image.width;
+                    let height = image.height;
+
+                    // Calculate new dimensions while maintaining aspect ratio
+                    if (width > maxWidth || height > maxHeight) {
+                        if (width / height > maxWidth / maxHeight) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        } else {
+                            width = Math.round((width * maxHeight) / height);
+                            height = maxHeight;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+
+                    ctx.drawImage(image, 0, 0, width, height);
+
+                    // Convert canvas back to Blob (JPEG), adjust quality if needed
+                    canvas.toBlob(
+                        (blob) => {
+                            if (blob) {
+                                resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+                            } else {
+                                reject(new Error('Image compression failed.'));
+                            }
+                        },
+                        'image/jpeg',
+                        quality
+                    );
+                };
+
+                image.onerror = () => reject(new Error('Failed to load image for resizing'));
+                reader.onerror = () => reject(new Error('Failed to read file'));
+
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
                 selectedFile = file;
                 debugLog('File selected:', file.name);
 
-                // Show preview
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    previewImage.src = e.target.result;
-                    previewContainer.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
+                // Resize/compress the image and store optimized file
+                try {
+                    optimizedFile = await resizeImage(file, 1024, 1024, 0.7);
+                    debugLog('Image optimized:', optimizedFile);
 
-                validateForm();
+                    // Show preview of optimized image
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewImage.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                    };
+                    reader.readAsDataURL(optimizedFile);
+
+                    validateForm();
+                } catch (error) {
+                    console.error('Image optimization error:', error);
+                    // Fallback: show original image if optimization fails
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewImage.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+
+                    optimizedFile = file;
+                    validateForm();
+                }
             }
         }
 
-        // Validate form inputs
         function validateForm() {
-            const hasFile = selectedFile !== null;
+            const hasFile = optimizedFile !== null;
             const hasApiKey = apiKeyInput.value.trim().length > 0;
             const hasEndpointId = endpointIdInput.value.trim().length > 0;
 
             submitBtn.disabled = !(hasFile && hasApiKey && hasEndpointId);
         }
 
-        // Convert file to base64
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = () => {
-                    // Remove the data URL prefix to get only base64
+                    // Remove data URL prefix
                     const base64 = reader.result.split(',')[1];
                     resolve(base64);
                 };
-                reader.onerror = error => reject(error);
+                reader.onerror = (error) => reject(error);
             });
         }
 
-        // Download annotated image
         function downloadAnnotatedImage() {
             if (!annotatedImageData) {
                 alert('No annotated image available to download');
@@ -621,54 +681,49 @@
             debugLog('Annotated image downloaded');
         }
 
-        // Handle form submission
         async function handleSubmit() {
             try {
                 submitBtn.disabled = true;
                 submitBtn.textContent = '⏳ Processing...';
 
-                // Reset containers
                 resultsContainer.style.display = 'none';
                 statusContainer.style.display = 'block';
                 statusContent.innerHTML = '<div class="spinner"></div><p>Converting image...</p>';
 
-                // Convert file to base64
-                const base64Image = await fileToBase64(selectedFile);
+                // Use optimizedFile instead of selectedFile
+                const base64Image = await fileToBase64(optimizedFile);
                 debugLog('Image converted to base64, length:', base64Image.length);
 
-                // Get form values
                 const apiKey = apiKeyInput.value.trim();
                 const endpointId = endpointIdInput.value.trim();
                 const enhancedAccuracy = document.getElementById('enhancedAccuracy').checked;
                 const highPrecision = document.getElementById('highPrecision').checked;
 
-                // Prepare request payload
                 const payload = {
                     input: {
                         file: base64Image,
-                        filename: selectedFile.name,
+                        filename: optimizedFile.name,
                         enhanced_accuracy: enhancedAccuracy,
                         high_precision: highPrecision,
-                        save_results: true
-                    }
+                        save_results: true,
+                    },
                 };
 
                 debugLog('Payload prepared:', {
-                    filename: selectedFile.name,
+                    filename: optimizedFile.name,
                     enhanced_accuracy: enhancedAccuracy,
-                    high_precision: highPrecision
+                    high_precision: highPrecision,
                 });
 
-                // Send request to RunPod /run endpoint
                 statusContent.innerHTML = '<div class="spinner"></div><p>Submitting job to RunPod...</p>';
 
                 const runResponse = await fetch(`${RUNPOD_API_BASE}/${endpointId}/run`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
+                        Authorization: `Bearer ${apiKey}`,
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
                 });
 
                 const runData = await runResponse.json();
@@ -680,7 +735,6 @@
 
                 jobId = runData.id;
 
-                // Start polling for status
                 statusContent.innerHTML = `
                     <div class="spinner"></div>
                     <p><strong>Job ID:</strong> ${jobId}</p>
@@ -689,7 +743,6 @@
                 `;
 
                 pollJobStatus(apiKey, endpointId, jobId);
-
             } catch (error) {
                 console.error('Error:', error);
                 statusContent.innerHTML = `
@@ -702,7 +755,6 @@
             }
         }
 
-        // Poll job status
         async function pollJobStatus(apiKey, endpointId, jobId) {
             pollInterval = setInterval(async () => {
                 try {
@@ -710,8 +762,8 @@
                         `${RUNPOD_API_BASE}/${endpointId}/status/${jobId}`,
                         {
                             headers: {
-                                'Authorization': `Bearer ${apiKey}`
-                            }
+                                Authorization: `Bearer ${apiKey}`,
+                            },
                         }
                     );
 
@@ -720,7 +772,6 @@
 
                     updateStatusDisplay(statusData);
 
-                    // Check if job is complete
                     if (statusData.status === 'COMPLETED') {
                         clearInterval(pollInterval);
                         displayResults(statusData);
@@ -736,7 +787,6 @@
                         submitBtn.disabled = false;
                         submitBtn.textContent = '🚀 Detect Defects';
                     }
-
                 } catch (error) {
                     console.error('Polling error:', error);
                     clearInterval(pollInterval);
@@ -751,7 +801,6 @@
             }, POLL_INTERVAL);
         }
 
-        // Update status display
         function updateStatusDisplay(statusData) {
             const status = statusData.status;
             let statusMessage = '';
@@ -778,12 +827,19 @@
                 <p><strong>Job ID:</strong> ${statusData.id}</p>
                 <p><span class="status-badge status-${status}">${status}</span></p>
                 <p>${statusMessage}</p>
-                ${statusData.delayTime ? `<p><small>Queue delay: ${(statusData.delayTime / 1000).toFixed(2)}s</small></p>` : ''}
-                ${statusData.executionTime ? `<p><small>Execution time: ${(statusData.executionTime / 1000).toFixed(2)}s</small></p>` : ''}
+                ${
+                    statusData.delayTime
+                        ? `<p><small>Queue delay: ${(statusData.delayTime / 1000).toFixed(2)}s</small></p>`
+                        : ''
+                }
+                ${
+                    statusData.executionTime
+                        ? `<p><small>Execution time: ${(statusData.executionTime / 1000).toFixed(2)}s</small></p>`
+                        : ''
+                }
             `;
         }
 
-        // Display results
         function displayResults(data) {
             const output = data.output;
 
@@ -799,7 +855,6 @@
                 return;
             }
 
-            // Metrics grid
             let metricsHTML = `
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -821,12 +876,10 @@
                 </div>
             `;
 
-            // Annotated image section (ENHANCED WITH BASE64 SUPPORT)
             let annotatedImageHTML = '';
             if (output.annotated_image) {
-                // Store for download
                 annotatedImageData = output.annotated_image;
-                
+
                 debugLog('Annotated image found, base64 length:', output.annotated_image.length);
                 debugLog('Image data prefix:', output.annotated_image.substring(0, 50));
 
@@ -846,39 +899,46 @@
                             </p>
                         </div>
                         <div class="image-wrapper">
-                            <img src="${output.annotated_image}" 
-                                 class="annotated-image" 
-                                 alt="Train Wagon with Detected Defects"
-                                 onerror="console.error('Failed to load annotated image'); this.style.display='none';"
-                                 onload="console.log('Annotated image loaded successfully');">
+                            <img src="${output.annotated_image}"
+                                class="annotated-image"
+                                alt="Train Wagon with Detected Defects"
+                                onerror="console.error('Failed to load annotated image'); this.style.display='none';"
+                                onload="console.log('Annotated image loaded successfully');">
                             <div class="image-info">
-                                📊 Image shows ${output.detections_count || 0} detected defect${output.detections_count !== 1 ? 's' : ''} 
+                                📊 Image shows ${output.detections_count || 0} detected defect${output.detections_count !== 1 ? 's' : ''}
                                 with bounding boxes and confidence scores
                             </div>
                             <button class="download-btn" onclick="downloadAnnotatedImage()">
                                 ⬇️ Download Annotated Image
                             </button>
                         </div>
-                        ${DEBUG_MODE ? `<div class="debug-info">
-                            Debug Info:<br>
-                            - Base64 data length: ${output.annotated_image.length} characters<br>
-                            - Data URI format: ${output.annotated_image.startsWith('data:image') ? 'Valid' : 'Invalid'}<br>
-                            - Image type: ${output.annotated_image.substring(5, 15)}
-                        </div>` : ''}
+                        ${
+                            DEBUG_MODE
+                                ? `<div class="debug-info">
+                                    Debug Info:<br>
+                                    - Base64 data length: ${output.annotated_image.length} characters<br>
+                                    - Data URI format: ${output.annotated_image.startsWith('data:image') ? 'Valid' : 'Invalid'}<br>
+                                    - Image type: ${output.annotated_image.substring(5, 15)}
+                                </div>`
+                                : ''
+                        }
                     </div>
                 `;
             } else {
                 debugLog('No annotated image in response');
                 annotatedImageHTML = `
                     <div class="no-image-notice">
-                        <strong>⚠️ Notice:</strong> Annotated image not available in the response. 
+                        <strong>⚠️ Notice:</strong> Annotated image not available in the response.
                         This might indicate an issue with the backend processing or image encoding.
-                        ${DEBUG_MODE ? `<br><br>Debug: Check if 'annotated_image' field exists in output: ${Object.keys(output).join(', ')}` : ''}
+                        ${
+                            DEBUG_MODE
+                                ? `<br><br>Debug: Check if 'annotated_image' field exists in output: ${Object.keys(output).join(', ')}`
+                                : ''
+                        }
                     </div>
                 `;
             }
 
-            // Detections list
             let detectionsHTML = '<h3 style="margin-top: 30px;">🔍 Detected Defects Details</h3>';
 
             if (output.detections && output.detections.length > 0) {
@@ -888,7 +948,11 @@
                             <h3>${index + 1}. ${detection.defect_type}</h3>
                             <p><strong>Severity:</strong> ${detection.severity.toUpperCase()}</p>
                             <p><strong>Confidence:</strong> ${(detection.confidence * 100).toFixed(2)}%</p>
-                            ${detection.recommendations ? `<p><strong>Recommendations:</strong> ${detection.recommendations}</p>` : ''}
+                            ${
+                                detection.recommendations
+                                    ? `<p><strong>Recommendations:</strong> ${detection.recommendations}</p>`
+                                    : ''
+                            }
                         </div>
                     `;
                 });
@@ -896,11 +960,9 @@
                 detectionsHTML += '<p style="color: #28a745; font-weight: bold; padding: 20px; background: #d1e7dd; border-radius: 10px;">✅ No defects detected! Wagon is in good condition.</p>';
             }
 
-            // Combine all sections
             resultsContent.innerHTML = metricsHTML + annotatedImageHTML + detectionsHTML;
             resultsContainer.style.display = 'block';
 
-            // Scroll to results
             setTimeout(() => {
                 resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
