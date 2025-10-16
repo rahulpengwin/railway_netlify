@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Train Wagon Defect Detection - RunPod Client</title>
+    <title>Train Wagon Defect Detection System</title>
     <style>
         * {
             margin: 0;
@@ -19,892 +19,771 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
         }
 
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
             font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 40px;
-            font-size: 1.1em;
+            font-size: 1.2em;
+            opacity: 0.9;
         }
 
-        .upload-section {
-            background: #f8f9fa;
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
-        .upload-section:hover {
-            border-color: #764ba2;
-            background: #f0f1f5;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-        }
-
-        .file-input-label {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: inline-block;
-        }
-
-        .file-input-label:hover {
-            transform: scale(1.05);
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        .preview-container {
-            margin: 20px 0;
-            display: none;
-        }
-
-        .preview-image {
-            max-width: 100%;
-            max-height: 400px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .options-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .option-card {
+        .config-section {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 10px;
-            border: 2px solid #e0e0e0;
+            margin-bottom: 30px;
         }
 
-        .option-card label {
-            display: flex;
-            align-items: center;
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
             font-weight: 600;
+            margin-bottom: 8px;
             color: #333;
-            cursor: pointer;
         }
 
-        .option-card input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        .api-key-section {
-            margin: 20px 0;
-        }
-
-        .api-key-input {
+        input[type="text"],
+        input[type="number"],
+        input[type="url"] {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1em;
+            border-radius: 8px;
+            font-size: 14px;
             transition: border-color 0.3s;
         }
 
-        .api-key-input:focus {
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="url"]:focus {
             outline: none;
             border-color: #667eea;
         }
 
-        .submit-btn {
-            width: 100%;
+        .upload-section {
+            text-align: center;
+            padding: 40px;
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            background: #f8f9ff;
+            transition: all 0.3s;
+        }
+
+        .upload-section:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-section input[type="file"] {
+            display: none;
+        }
+
+        .upload-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 18px;
+            padding: 15px 40px;
             border: none;
             border-radius: 50px;
-            font-size: 1.2em;
-            font-weight: bold;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
         }
 
-        .submit-btn:hover:not(:disabled) {
-            transform: scale(1.02);
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        .upload-btn:active {
+            transform: translateY(0);
         }
 
-        .status-container {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status-message.info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #1976d2;
+        }
+
+        .status-message.success {
+            background: #e8f5e9;
+            color: #388e3c;
+            border-left: 4px solid #388e3c;
+        }
+
+        .status-message.error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #c62828;
+        }
+
+        .status-message.warning {
+            background: #fff3e0;
+            color: #f57c00;
+            border-left: 4px solid #f57c00;
+        }
+
+        .preview-section {
+            margin: 30px 0;
+            display: none;
+        }
+
+        .preview-section.active {
+            display: block;
+        }
+
+        .preview-image {
+            max-width: 100%;
             border-radius: 10px;
-            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .status-IN_QUEUE {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-IN_PROGRESS {
-            background: #cfe2ff;
-            color: #084298;
-        }
-
-        .status-COMPLETED {
-            background: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .status-FAILED {
-            background: #f8d7da;
-            color: #842029;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .results-container {
+        .results-section {
             margin-top: 30px;
-            display: none;
         }
 
-        .detection-card {
+        .detection-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .defects-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .defect-item {
             background: white;
             padding: 15px;
-            margin: 10px 0;
-            border-radius: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
             border-left: 4px solid #667eea;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .detection-card h3 {
-            color: #667eea;
+        .defect-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .defect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 10px;
         }
 
-        .severity-critical {
-            border-left-color: #dc3545;
-        }
-
-        .severity-high {
-            border-left-color: #fd7e14;
-        }
-
-        .severity-medium {
-            border-left-color: #ffc107;
-        }
-
-        .severity-low {
-            border-left-color: #28a745;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .metric-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .metric-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .metric-label {
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-
-        /* Enhanced Annotated Image Section */
-        .annotated-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 30px;
-            border-radius: 15px;
-            margin: 30px 0;
-            border: 3px solid #667eea;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
-        }
-
-        .annotated-section h3 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            text-align: center;
-        }
-
-        .severity-legend {
-            margin-bottom: 25px;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            border: 2px solid #e0e0e0;
-        }
-
-        .severity-legend h4 {
-            margin-bottom: 15px;
+        .defect-type {
+            font-weight: 600;
             color: #333;
             font-size: 1.1em;
         }
 
-        .legend-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .severity-indicator {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 0.95em;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .severity-indicator::before {
-            content: '●';
-            margin-right: 8px;
-            font-size: 1.5em;
-        }
-
-        .severity-indicator.critical {
-            background: #dc3545;
+        .confidence-badge {
+            background: #667eea;
             color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
         }
 
-        .severity-indicator.high {
-            background: #fd7e14;
-            color: white;
+        .defect-details {
+            color: #666;
+            font-size: 0.9em;
         }
 
-        .severity-indicator.medium {
-            background: #ffc107;
-            color: #333;
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
         }
 
-        .severity-indicator.low {
-            background: #28a745;
-            color: white;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .image-wrapper {
-            position: relative;
-            text-align: center;
-            background: white;
+        .compression-info {
+            background: #fff3e0;
             padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .annotated-image {
-            max-width: 100%;
-            height: auto;
             border-radius: 8px;
-            border: 2px solid #667eea;
-            display: block;
-            margin: 0 auto;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            margin: 15px 0;
+            display: none;
         }
 
-        .image-info {
-            margin-top: 15px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 5px;
+        .compression-info.active {
+            display: block;
+        }
+
+        .compression-details {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .compression-stat {
+            text-align: center;
+        }
+
+        .compression-stat strong {
+            display: block;
+            font-size: 1.2em;
+            color: #f57c00;
+        }
+
+        .compression-stat span {
             font-size: 0.9em;
             color: #666;
         }
 
-        .download-btn {
-            margin-top: 15px;
-            padding: 10px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .download-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .no-image-notice {
-            padding: 25px;
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            border-radius: 8px;
-            color: #856404;
-            margin: 20px 0;
-            font-size: 1.05em;
-        }
-
-        .error-message {
-            background: #f8d7da;
-            color: #842029;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 5px solid #dc3545;
-        }
-
-        .debug-info {
-            margin-top: 10px;
-            padding: 10px;
-            background: #e7f3ff;
-            border-left: 3px solid #2196F3;
-            border-radius: 5px;
-            font-size: 0.85em;
-            color: #0c5460;
-            font-family: 'Courier New', monospace;
-        }
-
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            .options-section {
-                grid-template-columns: 1fr;
-            }
-
             h1 {
                 font-size: 1.8em;
             }
 
-            .annotated-section {
-                padding: 15px;
+            .subtitle {
+                font-size: 1em;
             }
 
-            .legend-items {
-                flex-direction: column;
+            .main-content {
+                padding: 20px;
+            }
+
+            .detection-stats {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚂 Train Wagon Defect Detection</h1>
-        <p class="subtitle">AI-Powered Computer Vision with RunPod Serverless</p>
+        <header>
+            <h1>🚂 Train Wagon Defect Detection System</h1>
+            <p class="subtitle">AI-Powered Real-time Defect Analysis</p>
+        </header>
 
-        <div class="upload-section">
-            <div class="file-input-wrapper">
-                <label for="fileInput" class="file-input-label">
-                    📷 Choose Image
-                </label>
-                <input type="file" id="fileInput" accept="image/*">
+        <div class="main-content">
+            <!-- Configuration Section -->
+            <div class="config-section">
+                <h2 style="margin-bottom: 20px; color: #333;">⚙️ Configuration</h2>
+                
+                <div class="input-group">
+                    <label for="apiKey">RunPod API Key</label>
+                    <input 
+                        type="text" 
+                        id="apiKey" 
+                        placeholder="Enter your RunPod API key"
+                        value=""
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="endpointUrl">RunPod Endpoint URL</label>
+                    <input 
+                        type="url" 
+                        id="endpointUrl" 
+                        placeholder="https://api.runpod.ai/v2/your-endpoint-id/runsync"
+                        value=""
+                    >
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="input-group">
+                        <label for="confidenceThreshold">Confidence Threshold</label>
+                        <input 
+                            type="number" 
+                            id="confidenceThreshold" 
+                            min="0" 
+                            max="1" 
+                            step="0.05" 
+                            value="0.5"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="iouThreshold">IOU Threshold</label>
+                        <input 
+                            type="number" 
+                            id="iouThreshold" 
+                            min="0" 
+                            max="1" 
+                            step="0.05" 
+                            value="0.5"
+                        >
+                    </div>
+                </div>
             </div>
-            <div class="preview-container" id="previewContainer">
+
+            <!-- Upload Section -->
+            <div class="upload-section" id="uploadSection">
+                <input 
+                    type="file" 
+                    id="imageInput" 
+                    accept="image/*"
+                >
+                <label for="imageInput" class="upload-btn">
+                    📁 Choose Image to Analyze
+                </label>
+                <p style="margin-top: 15px; color: #666;">Supported formats: JPG, PNG, WebP</p>
+            </div>
+
+            <!-- Status Message -->
+            <div class="status-message" id="statusMessage"></div>
+
+            <!-- Compression Info -->
+            <div class="compression-info" id="compressionInfo">
+                <strong style="display: block; margin-bottom: 10px; color: #f57c00;">🗜️ Image Optimization Applied</strong>
+                <div class="compression-details" id="compressionDetails"></div>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="preview-section" id="previewSection">
+                <h3 style="margin-bottom: 15px; color: #333;">📸 Image Preview</h3>
                 <img id="previewImage" class="preview-image" alt="Preview">
             </div>
-        </div>
 
-        <div class="api-key-section">
-            <label for="apiKey" style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">
-                🔑 RunPod API Key
-            </label>
-            <input 
-                type="password" 
-                id="apiKey" 
-                class="api-key-input" 
-                placeholder="Enter your RunPod API Key"
-            >
-        </div>
-
-        <div class="api-key-section">
-            <label for="endpointId" style="font-weight: 600; color: #333; margin-bottom: 10px; display: block;">
-                🎯 Endpoint ID
-            </label>
-            <input 
-                type="text" 
-                id="endpointId" 
-                class="api-key-input" 
-                placeholder="Enter your RunPod Endpoint ID (e.g., v3usm0g87m12nl)"
-                value="v3usm0g87m12nl"
-            >
-        </div>
-
-        <div class="options-section">
-            <div class="option-card">
-                <label>
-                    <input type="checkbox" id="enhancedAccuracy" checked>
-                    Enhanced Accuracy Mode
-                </label>
-                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
-                    Multi-stage filtering with >95% accuracy
-                </p>
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <h2 style="margin-bottom: 20px; color: #333;">📊 Detection Results</h2>
+                
+                <div class="detection-stats" id="detectionStats"></div>
+                
+                <div class="defects-list" id="defectsList"></div>
             </div>
-            <div class="option-card">
-                <label>
-                    <input type="checkbox" id="highPrecision" checked>
-                    High Precision Detection
-                </label>
-                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
-                    Advanced confidence refinement
-                </p>
-            </div>
-        </div>
-
-        <button class="submit-btn" id="submitBtn" disabled>
-            🚀 Detect Defects
-        </button>
-
-        <div class="status-container" id="statusContainer">
-            <h3>📊 Processing Status</h3>
-            <div id="statusContent"></div>
-        </div>
-
-        <div class="results-container" id="resultsContainer">
-            <h2 style="color: #333; margin-bottom: 20px;">🎯 Detection Results</h2>
-            <div id="resultsContent"></div>
         </div>
     </div>
 
     <script>
-        // Configuration
-        const RUNPOD_API_BASE = 'https://api.runpod.ai/v2';
-        const POLL_INTERVAL = 2000; // 2 seconds
-        const DEBUG_MODE = true; // Set to false in production
+        // ============================================
+        // IMAGE COMPRESSION FUNCTIONS
+        // ============================================
 
-        let selectedFile = null;
-        let jobId = null;
-        let pollInterval = null;
-        let annotatedImageData = null; // Store annotated image data
+        /**
+         * Compresses and resizes an image using HTML5 Canvas
+         */
+        async function compressImage(file, options = {}) {
+            const {
+                maxWidth = 1920,
+                maxHeight = 1080,
+                quality = 0.8,
+                maxSizeMB = 0.8,
+                outputFormat = 'image/jpeg'
+            } = options;
 
-        // DOM Elements
-        const fileInput = document.getElementById('fileInput');
-        const previewContainer = document.getElementById('previewContainer');
-        const previewImage = document.getElementById('previewImage');
-        const apiKeyInput = document.getElementById('apiKey');
-        const endpointIdInput = document.getElementById('endpointId');
-        const submitBtn = document.getElementById('submitBtn');
-        const statusContainer = document.getElementById('statusContainer');
-        const statusContent = document.getElementById('statusContent');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const resultsContent = document.getElementById('resultsContent');
-
-        // Debug logging
-        function debugLog(message, data = null) {
-            if (DEBUG_MODE) {
-                console.log(`[DEBUG] ${message}`, data || '');
-            }
-        }
-
-        // Event Listeners
-        fileInput.addEventListener('change', handleFileSelect);
-        apiKeyInput.addEventListener('input', validateForm);
-        endpointIdInput.addEventListener('input', validateForm);
-        submitBtn.addEventListener('click', handleSubmit);
-
-        // Handle file selection
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                selectedFile = file;
-                debugLog('File selected:', file.name);
-
-                // Show preview
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    previewImage.src = e.target.result;
-                    previewContainer.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-
-                validateForm();
-            }
-        }
-
-        // Validate form inputs
-        function validateForm() {
-            const hasFile = selectedFile !== null;
-            const hasApiKey = apiKeyInput.value.trim().length > 0;
-            const hasEndpointId = endpointIdInput.value.trim().length > 0;
-
-            submitBtn.disabled = !(hasFile && hasApiKey && hasEndpointId);
-        }
-
-        // Convert file to base64
-        function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    // Remove the data URL prefix to get only base64
-                    const base64 = reader.result.split(',')[1];
-                    resolve(base64);
+                
+                reader.onload = (e) => {
+                    const img = new Image();
+                    
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Calculate new dimensions while maintaining aspect ratio
+                        if (width > maxWidth || height > maxHeight) {
+                            const aspectRatio = width / height;
+                            
+                            if (width > height) {
+                                width = maxWidth;
+                                height = width / aspectRatio;
+                            } else {
+                                height = maxHeight;
+                                width = height * aspectRatio;
+                            }
+                        }
+                        
+                        // Create canvas and draw resized image
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Convert canvas to blob
+                        canvas.toBlob(
+                            (blob) => {
+                                if (!blob) {
+                                    reject(new Error('Canvas to Blob conversion failed'));
+                                    return;
+                                }
+                                
+                                const sizeMB = blob.size / 1024 / 1024;
+                                
+                                if (sizeMB > maxSizeMB && quality > 0.1) {
+                                    const newQuality = quality * 0.8;
+                                    compressImage(file, { 
+                                        ...options, 
+                                        quality: newQuality 
+                                    }).then(resolve).catch(reject);
+                                } else {
+                                    resolve(blob);
+                                }
+                            },
+                            outputFormat,
+                            quality
+                        );
+                    };
+                    
+                    img.onerror = () => reject(new Error('Failed to load image'));
+                    img.src = e.target.result;
                 };
-                reader.onerror = error => reject(error);
+                
+                reader.onerror = () => reject(new Error('Failed to read file'));
+                reader.readAsDataURL(file);
             });
         }
 
-        // Download annotated image
-        function downloadAnnotatedImage() {
-            if (!annotatedImageData) {
-                alert('No annotated image available to download');
-                return;
-            }
-
-            const link = document.createElement('a');
-            link.href = annotatedImageData;
-            link.download = `defect_detection_${Date.now()}.jpg`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            debugLog('Annotated image downloaded');
+        /**
+         * Converts Blob to base64 string
+         */
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
         }
 
-        // Handle form submission
-        async function handleSubmit() {
+        /**
+         * Formats bytes to human-readable size
+         */
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // ============================================
+        // UI HELPER FUNCTIONS
+        // ============================================
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            statusEl.style.display = 'block';
+        }
+
+        function hideStatus() {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.style.display = 'none';
+        }
+
+        function showCompressionInfo(originalSize, compressedSize, originalDimensions, newDimensions) {
+            const compressionInfoEl = document.getElementById('compressionInfo');
+            const compressionDetailsEl = document.getElementById('compressionDetails');
+            
+            const compressionRatio = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+            
+            compressionDetailsEl.innerHTML = `
+                <div class="compression-stat">
+                    <strong>${formatFileSize(originalSize)}</strong>
+                    <span>Original Size</span>
+                </div>
+                <div class="compression-stat">
+                    <strong>→</strong>
+                    <span>Compressed</span>
+                </div>
+                <div class="compression-stat">
+                    <strong>${formatFileSize(compressedSize)}</strong>
+                    <span>New Size</span>
+                </div>
+                <div class="compression-stat">
+                    <strong>${compressionRatio}%</strong>
+                    <span>Reduction</span>
+                </div>
+            `;
+            
+            compressionInfoEl.classList.add('active');
+        }
+
+        function showPreview(blob) {
+            const previewSection = document.getElementById('previewSection');
+            const previewImage = document.getElementById('previewImage');
+            
+            previewImage.src = URL.createObjectURL(blob);
+            previewSection.classList.add('active');
+        }
+
+        function showResults(data) {
+            const resultsSection = document.getElementById('resultsSection');
+            const detectionStats = document.getElementById('detectionStats');
+            const defectsList = document.getElementById('defectsList');
+            
+            // Extract detections
+            const detections = data.detections || [];
+            const totalDefects = detections.length;
+            const avgConfidence = detections.length > 0 
+                ? (detections.reduce((sum, d) => sum + d.confidence, 0) / detections.length * 100).toFixed(1)
+                : 0;
+            
+            // Show stats
+            detectionStats.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${totalDefects}</div>
+                    <div class="stat-label">Defects Detected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${avgConfidence}%</div>
+                    <div class="stat-label">Avg Confidence</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${data.processing_time ? data.processing_time.toFixed(2) + 's' : 'N/A'}</div>
+                    <div class="stat-label">Processing Time</div>
+                </div>
+            `;
+            
+            // Show defects list
+            if (detections.length > 0) {
+                defectsList.innerHTML = '<h3 style="margin-bottom: 15px; color: #333;">🔍 Detected Defects</h3>' +
+                    detections.map((defect, index) => `
+                        <div class="defect-item">
+                            <div class="defect-header">
+                                <span class="defect-type">#${index + 1} ${defect.class_name || 'Unknown'}</span>
+                                <span class="confidence-badge">${(defect.confidence * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="defect-details">
+                                Bounding Box: [${defect.bbox.map(v => v.toFixed(0)).join(', ')}]
+                            </div>
+                        </div>
+                    `).join('');
+            } else {
+                defectsList.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <p style="font-size: 1.2em;">✅ No defects detected in this image</p>
+                    </div>
+                `;
+            }
+            
+            resultsSection.style.display = 'block';
+        }
+
+        // ============================================
+        // MAIN UPLOAD HANDLER
+        // ============================================
+
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            
+            if (!file) {
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showStatus('Please select a valid image file', 'error');
+                return;
+            }
+            
+            // Validate configuration
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const endpointUrl = document.getElementById('endpointUrl').value.trim();
+            
+            if (!apiKey || !endpointUrl) {
+                showStatus('Please enter API Key and Endpoint URL', 'error');
+                return;
+            }
+            
             try {
-                submitBtn.disabled = true;
-                submitBtn.textContent = '⏳ Processing...';
-
-                // Reset containers
-                resultsContainer.style.display = 'none';
-                statusContainer.style.display = 'block';
-                statusContent.innerHTML = '<div class="spinner"></div><p>Converting image...</p>';
-
-                // Convert file to base64
-                const base64Image = await fileToBase64(selectedFile);
-                debugLog('Image converted to base64, length:', base64Image.length);
-
-                // Get form values
-                const apiKey = apiKeyInput.value.trim();
-                const endpointId = endpointIdInput.value.trim();
-                const enhancedAccuracy = document.getElementById('enhancedAccuracy').checked;
-                const highPrecision = document.getElementById('highPrecision').checked;
-
-                // Prepare request payload
-                const payload = {
-                    input: {
-                        file: base64Image,
-                        filename: selectedFile.name,
-                        enhanced_accuracy: enhancedAccuracy,
-                        high_precision: highPrecision,
-                        save_results: true
-                    }
-                };
-
-                debugLog('Payload prepared:', {
-                    filename: selectedFile.name,
-                    enhanced_accuracy: enhancedAccuracy,
-                    high_precision: highPrecision
+                // Hide previous results
+                document.getElementById('resultsSection').style.display = 'none';
+                document.getElementById('compressionInfo').classList.remove('active');
+                
+                // Show processing status
+                showStatus('Optimizing image...', 'info');
+                
+                const originalSize = file.size;
+                console.log('Original file size:', formatFileSize(originalSize));
+                
+                // Compress the image
+                const compressedBlob = await compressImage(file, {
+                    maxWidth: 1920,
+                    maxHeight: 1080,
+                    quality: 0.85,
+                    maxSizeMB: 0.8,
+                    outputFormat: 'image/jpeg'
                 });
+                
+                const compressedSize = compressedBlob.size;
+                console.log('Compressed file size:', formatFileSize(compressedSize));
+                console.log('Compression ratio:', ((1 - compressedSize / originalSize) * 100).toFixed(2) + '%');
+                
+                // Show compression info
+                showCompressionInfo(originalSize, compressedSize);
+                
+                // Show preview
+                showPreview(compressedBlob);
+                
+                // Convert to base64
+                showStatus('Converting image...', 'info');
+                const base64Image = await blobToBase64(compressedBlob);
+                
+                // Send to RunPod API
+                showStatus('Detecting defects...', 'info');
+                await detectDefects(base64Image, apiKey, endpointUrl);
+                
+            } catch (error) {
+                console.error('Error processing image:', error);
+                showStatus('Failed to process image: ' + error.message, 'error');
+            }
+        }
 
-                // Send request to RunPod /run endpoint
-                statusContent.innerHTML = '<div class="spinner"></div><p>Submitting job to RunPod...</p>';
+        // ============================================
+        // RUNPOD API CALL
+        // ============================================
 
-                const runResponse = await fetch(`${RUNPOD_API_BASE}/${endpointId}/run`, {
+        async function detectDefects(base64Image, apiKey, endpointUrl) {
+            const confidenceThreshold = parseFloat(document.getElementById('confidenceThreshold').value);
+            const iouThreshold = parseFloat(document.getElementById('iouThreshold').value);
+            
+            try {
+                const response = await fetch(endpointUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${apiKey}`
                     },
-                    body: JSON.stringify(payload)
-                });
-
-                const runData = await runResponse.json();
-                debugLog('RunPod response:', runData);
-
-                if (!runResponse.ok) {
-                    throw new Error(runData.error || 'Failed to submit job');
-                }
-
-                jobId = runData.id;
-
-                // Start polling for status
-                statusContent.innerHTML = `
-                    <div class="spinner"></div>
-                    <p><strong>Job ID:</strong> ${jobId}</p>
-                    <p><span class="status-badge status-IN_QUEUE">IN_QUEUE</span></p>
-                    <p>Your job is in the queue. Waiting for worker...</p>
-                `;
-
-                pollJobStatus(apiKey, endpointId, jobId);
-
-            } catch (error) {
-                console.error('Error:', error);
-                statusContent.innerHTML = `
-                    <div class="error-message">
-                        <strong>❌ Error:</strong> ${error.message}
-                    </div>
-                `;
-                submitBtn.disabled = false;
-                submitBtn.textContent = '🚀 Detect Defects';
-            }
-        }
-
-        // Poll job status
-        async function pollJobStatus(apiKey, endpointId, jobId) {
-            pollInterval = setInterval(async () => {
-                try {
-                    const statusResponse = await fetch(
-                        `${RUNPOD_API_BASE}/${endpointId}/status/${jobId}`,
-                        {
-                            headers: {
-                                'Authorization': `Bearer ${apiKey}`
-                            }
+                    body: JSON.stringify({
+                        input: {
+                            image: base64Image,
+                            confidence_threshold: confidenceThreshold,
+                            iou_threshold: iouThreshold
                         }
-                    );
-
-                    const statusData = await statusResponse.json();
-                    debugLog('Status update:', statusData);
-
-                    updateStatusDisplay(statusData);
-
-                    // Check if job is complete
-                    if (statusData.status === 'COMPLETED') {
-                        clearInterval(pollInterval);
-                        displayResults(statusData);
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = '🚀 Detect Defects';
-                    } else if (statusData.status === 'FAILED') {
-                        clearInterval(pollInterval);
-                        statusContent.innerHTML = `
-                            <div class="error-message">
-                                <strong>❌ Job Failed:</strong> ${statusData.error || 'Unknown error'}
-                            </div>
-                        `;
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = '🚀 Detect Defects';
-                    }
-
-                } catch (error) {
-                    console.error('Polling error:', error);
-                    clearInterval(pollInterval);
-                    statusContent.innerHTML = `
-                        <div class="error-message">
-                            <strong>❌ Polling Error:</strong> ${error.message}
-                        </div>
-                    `;
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '🚀 Detect Defects';
-                }
-            }, POLL_INTERVAL);
-        }
-
-        // Update status display
-        function updateStatusDisplay(statusData) {
-            const status = statusData.status;
-            let statusMessage = '';
-
-            switch (status) {
-                case 'IN_QUEUE':
-                    statusMessage = 'Your job is waiting in the queue...';
-                    break;
-                case 'IN_PROGRESS':
-                    statusMessage = 'Processing image with YOLOv11 model...';
-                    break;
-                case 'COMPLETED':
-                    statusMessage = 'Detection completed successfully!';
-                    break;
-                case 'FAILED':
-                    statusMessage = 'Job failed. Please try again.';
-                    break;
-                default:
-                    statusMessage = `Status: ${status}`;
-            }
-
-            statusContent.innerHTML = `
-                ${status !== 'COMPLETED' ? '<div class="spinner"></div>' : ''}
-                <p><strong>Job ID:</strong> ${statusData.id}</p>
-                <p><span class="status-badge status-${status}">${status}</span></p>
-                <p>${statusMessage}</p>
-                ${statusData.delayTime ? `<p><small>Queue delay: ${(statusData.delayTime / 1000).toFixed(2)}s</small></p>` : ''}
-                ${statusData.executionTime ? `<p><small>Execution time: ${(statusData.executionTime / 1000).toFixed(2)}s</small></p>` : ''}
-            `;
-        }
-
-        // Display results
-        function displayResults(data) {
-            const output = data.output;
-
-            debugLog('Display results called with output:', output);
-
-            if (!output || output.error) {
-                resultsContent.innerHTML = `
-                    <div class="error-message">
-                        <strong>❌ Error:</strong> ${output?.error || 'No output received'}
-                    </div>
-                `;
-                resultsContainer.style.display = 'block';
-                return;
-            }
-
-            // Metrics grid
-            let metricsHTML = `
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-value">${output.detections_count || 0}</div>
-                        <div class="metric-label">Total Defects</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">${output.processing_time}s</div>
-                        <div class="metric-label">Processing Time</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">${output.severity_breakdown?.critical || 0}</div>
-                        <div class="metric-label">Critical</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">${output.severity_breakdown?.high || 0}</div>
-                        <div class="metric-label">High Severity</div>
-                    </div>
-                </div>
-            `;
-
-            // Annotated image section (ENHANCED WITH BASE64 SUPPORT)
-            let annotatedImageHTML = '';
-            if (output.annotated_image) {
-                // Store for download
-                annotatedImageData = output.annotated_image;
-                
-                debugLog('Annotated image found, base64 length:', output.annotated_image.length);
-                debugLog('Image data prefix:', output.annotated_image.substring(0, 50));
-
-                annotatedImageHTML = `
-                    <div class="annotated-section">
-                        <h3>📸 Defect Detection Results</h3>
-                        <div class="severity-legend">
-                            <h4>🎨 Severity Color Legend</h4>
-                            <div class="legend-items">
-                                <span class="severity-indicator critical">Critical</span>
-                                <span class="severity-indicator high">High</span>
-                                <span class="severity-indicator medium">Medium</span>
-                                <span class="severity-indicator low">Low</span>
-                            </div>
-                            <p style="margin-top: 15px; font-size: 0.95em; color: #666; text-align: center;">
-                                Defects are marked with colored bounding boxes and labels showing type and confidence level
-                            </p>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="${output.annotated_image}" 
-                                 class="annotated-image" 
-                                 alt="Train Wagon with Detected Defects"
-                                 onerror="console.error('Failed to load annotated image'); this.style.display='none';"
-                                 onload="console.log('Annotated image loaded successfully');">
-                            <div class="image-info">
-                                📊 Image shows ${output.detections_count || 0} detected defect${output.detections_count !== 1 ? 's' : ''} 
-                                with bounding boxes and confidence scores
-                            </div>
-                            <button class="download-btn" onclick="downloadAnnotatedImage()">
-                                ⬇️ Download Annotated Image
-                            </button>
-                        </div>
-                        ${DEBUG_MODE ? `<div class="debug-info">
-                            Debug Info:<br>
-                            - Base64 data length: ${output.annotated_image.length} characters<br>
-                            - Data URI format: ${output.annotated_image.startsWith('data:image') ? 'Valid' : 'Invalid'}<br>
-                            - Image type: ${output.annotated_image.substring(5, 15)}
-                        </div>` : ''}
-                    </div>
-                `;
-            } else {
-                debugLog('No annotated image in response');
-                annotatedImageHTML = `
-                    <div class="no-image-notice">
-                        <strong>⚠️ Notice:</strong> Annotated image not available in the response. 
-                        This might indicate an issue with the backend processing or image encoding.
-                        ${DEBUG_MODE ? `<br><br>Debug: Check if 'annotated_image' field exists in output: ${Object.keys(output).join(', ')}` : ''}
-                    </div>
-                `;
-            }
-
-            // Detections list
-            let detectionsHTML = '<h3 style="margin-top: 30px;">🔍 Detected Defects Details</h3>';
-
-            if (output.detections && output.detections.length > 0) {
-                output.detections.forEach((detection, index) => {
-                    detectionsHTML += `
-                        <div class="detection-card severity-${detection.severity}">
-                            <h3>${index + 1}. ${detection.defect_type}</h3>
-                            <p><strong>Severity:</strong> ${detection.severity.toUpperCase()}</p>
-                            <p><strong>Confidence:</strong> ${(detection.confidence * 100).toFixed(2)}%</p>
-                            ${detection.recommendations ? `<p><strong>Recommendations:</strong> ${detection.recommendations}</p>` : ''}
-                        </div>
-                    `;
+                    })
                 });
-            } else {
-                detectionsHTML += '<p style="color: #28a745; font-weight: bold; padding: 20px; background: #d1e7dd; border-radius: 10px;">✅ No defects detected! Wagon is in good condition.</p>';
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('Detection result:', result);
+                
+                // Handle RunPod response format
+                let detectionData;
+                if (result.output) {
+                    detectionData = result.output;
+                } else if (result.detections) {
+                    detectionData = result;
+                } else {
+                    throw new Error('Unexpected API response format');
+                }
+                
+                showResults(detectionData);
+                showStatus('Detection complete!', 'success');
+                
+            } catch (error) {
+                console.error('Detection error:', error);
+                showStatus('Error: ' + error.message, 'error');
+                throw error;
             }
-
-            // Combine all sections
-            resultsContent.innerHTML = metricsHTML + annotatedImageHTML + detectionsHTML;
-            resultsContainer.style.display = 'block';
-
-            // Scroll to results
-            setTimeout(() => {
-                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
         }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+
+        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+
+        // Optional: Add drag and drop functionality
+        const uploadSection = document.getElementById('uploadSection');
+        
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.style.borderColor = '#764ba2';
+            uploadSection.style.background = '#f0f2ff';
+        });
+        
+        uploadSection.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadSection.style.borderColor = '#667eea';
+            uploadSection.style.background = '#f8f9ff';
+        });
+        
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.style.borderColor = '#667eea';
+            uploadSection.style.background = '#f8f9ff';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('imageInput').files = files;
+                handleImageUpload({ target: { files: files } });
+            }
+        });
+
+        console.log('🚂 Train Wagon Defect Detection System initialized');
     </script>
 </body>
 </html>
